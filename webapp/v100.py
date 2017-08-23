@@ -1,16 +1,17 @@
 VERSION_STR = 'v1.0.0'
 
-import base64
-import uuid
-
 import cv2
-import numpy as np
+import uuid
+import base64
 import requests
+import numpy as np
 from error import Error
-from flask import Blueprint, request, jsonify
 # from pymongo import MongoClient
 # from pymongo.errors import DuplicateKeyError, CollectionInvalid
 from keras.models import model_from_json
+from flask import Blueprint, request, jsonify
+import json
+
 
 blueprint = Blueprint(VERSION_STR, __name__)
 
@@ -318,5 +319,5 @@ def feedback():
 # query: db.photoinfo.find({"_id": ObjectId("578fd839beba87784205b73b")},{})
 
 
-from main import app
+from app import app
 app.register_blueprint(blueprint, url_prefix='/'+VERSION_STR)

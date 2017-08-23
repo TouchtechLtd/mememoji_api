@@ -1,9 +1,8 @@
 VERSION_STR = 'admin'
 
 
-from app import APP_NAME
-from error import Error
 from flask import Blueprint, jsonify, request
+from main import APP_NAME
 
 blueprint = Blueprint(VERSION_STR, __name__)
 
@@ -98,5 +97,5 @@ def status():
     return jsonify(res)
 
 
-from app import app
+from main import app
 app.register_blueprint(blueprint, url_prefix='/'+VERSION_STR)

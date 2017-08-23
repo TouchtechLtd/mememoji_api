@@ -1,5 +1,5 @@
-from app import app
 from flask import jsonify
+from main import app
 
 
 class Error(Exception):

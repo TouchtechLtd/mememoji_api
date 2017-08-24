@@ -36,7 +36,7 @@ model.load_weights('model.h5')
 def base64_encode_image(image_rgb):
     image_bgr = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
     ret, image_buf = cv2.imencode('.jpg', image_bgr, (cv2.IMWRITE_JPEG_QUALITY, 40))
-    image_str = base64.b64encode(image_buf)
+    image_str = base64.b64encode(image_buf).decode('ascii')
     return 'data:image/jpeg;base64,' + image_str
 
 

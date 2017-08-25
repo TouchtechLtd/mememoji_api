@@ -22,3 +22,10 @@ Identify emotions in facial expression with this easy REST API: [mememoji.rhobot
 - [AWS](https://aws.amazon.com/) (with an EC2 [Ubuntu](http://www.ubuntu.com/) image)
 
 In addition and by necessity, the simple demo uses [HTML5](https://en.wikipedia.org/wiki/HTML5)/[CSS3](https://en.wikipedia.org/wiki/Cascading_Style_Sheets#CSS_3) + [Javascript](https://en.wikipedia.org/wiki/JavaScript)/[jQuery](https://jquery.com/).
+
+## Running
+
+clone the repo and then run
+
+`docker build -t mememoji .`
+`docker run -p 5000:5000 mememoji`

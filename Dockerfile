@@ -4,6 +4,10 @@ WORKDIR /app
 
 ADD . /app
 
+RUN apt-get update
+
+RUN apt-get -y install libglib2.0-0
+
 RUN pip install -r requirements.txt
 
 WORKDIR /app/webapp

@@ -40,13 +40,29 @@ def base64_encode_image(image_rgb):
     return 'data:image/jpeg;base64,' + image_str
 
 
+def fix_sadness_bias(angry, fear, happy, sad, surprise, neutral):
+    SADNESS_BIAS = 2
+
+    sad /= SADNESS_BIAS
+    sum_unbiased= 1 - sad
+
+    angry /= sum_unbiased
+    fear /= sum_unbiased
+    happy /= sum_unbiased
+    sad /= sum_unbiased
+    surprise /= sum_unbiased
+    neutral /= sum_unbiased
+
+    return angry, fear, happy, sad, surprise, neutral
+
+
 def predict_emotion(face_image_gray, index): # a single cropped face
     resized_img = cv2.resize(face_image_gray, (48,48), interpolation = cv2.INTER_AREA)
     # cv2.imwrite(str(index)+'.png', resized_img)
     image = resized_img.reshape(1, 1, 48, 48)
     list_of_list = model.predict(image, batch_size=1, verbose=1)
     angry, fear, happy, sad, surprise, neutral = [prob for lst in list_of_list for prob in lst]
-    return  angry, fear, happy, sad, surprise, neutral
+    return fix_sadness_bias(angry, fear, happy, sad, surprise, neutral)
 
 
 def build_PhotoInfo(image_gray, image_rgb, annotated_rgb, crop_faces):

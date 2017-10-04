@@ -1,4 +1,4 @@
 version: '2'
 services:
   app:
-    image: hub.touchtech.co.nz/mememoji-touchtech:latest
+    image: hub.touchtech.co.nz/mememoji_api

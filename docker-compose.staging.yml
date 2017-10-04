@@ -1,6 +1,7 @@
 version: '2'
 services:
   app:
+    image: hub.touchtech.co.nz/mememoji_api:latest-staging
     environment:
       VIRTUAL_HOST: tepapa-poc.touchtech.co.nz
       VIRTUAL_PORT: 5000

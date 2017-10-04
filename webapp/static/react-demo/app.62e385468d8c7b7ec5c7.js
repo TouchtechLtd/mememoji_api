@@ -891,25 +891,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var FACE_TIMEOUT = 5000;
 
-var MainContainer = (0, _react4.default)('div', 'css-MainContainer-iou4fo0', [{
+var MainContainer = (0, _react4.default)('div', 'css-MainContainer-156etu30', [{
   'position': 'absolute',
   'top': '0',
   'left': '0',
   'width': '100%',
   'height': '100%',
   'overflow': 'hidden',
-  'padding': '2rem',
+  'display': '-webkit-box; display: -ms-flexbox; display: flex'
+}]);
+var Container = (0, _react4.default)('div', 'css-Container-156etu31', [{
   'display': '-webkit-box; display: -ms-flexbox; display: flex',
   'WebkitBoxOrient': 'vertical',
   'WebkitBoxDirection': 'normal',
   'msFlexDirection': 'column',
-  'flexDirection': 'column'
-}]);
-var Container = (0, _react4.default)('div', 'css-Container-iou4fo1', [{
-  'display': '-webkit-box; display: -ms-flexbox; display: flex',
+  'flexDirection': 'column',
   'WebkitBoxFlex': '1',
   'msFlex': '1',
-  'flex': '1'
+  'flex': '1',
+  'padding': '1rem'
 }]);
 
 var App = function (_Component) {
@@ -943,7 +943,7 @@ var App = function (_Component) {
             width: lastValue.width,
             height: lastValue.height
           };
-          return (0, _bounds.checkBounds)(prevBounds, currentBounds) && time - lastValue.time < FACE_TIMEOUT ? key : res;
+          return lastValue.index === face.index && (0, _bounds.checkBounds)(prevBounds, currentBounds) && time - lastValue.time < FACE_TIMEOUT ? key : res;
         }, undefined);
         var key = faceId || (0, _lodash.uniqueId)('face_');
         var initValue = result[key] || [];
@@ -967,11 +967,11 @@ var App = function (_Component) {
           _react2.default.createElement(_EmotionCapture2.default, { onCapture: _this.onCapture, 'data-qa-node': 'EmotionCapture',
             'data-qa-file': 'App'
           }),
-          _react2.default.createElement(_FacesMonitor2.default, { faces: _this.state.faces, 'data-qa-node': 'FacesMonitor',
+          _react2.default.createElement(_Timeline2.default, { history: _this.state.facesHistory, 'data-qa-node': 'Timeline',
             'data-qa-file': 'App'
           })
         ),
-        _react2.default.createElement(_Timeline2.default, { history: _this.state.facesHistory, 'data-qa-node': 'Timeline',
+        _react2.default.createElement(_FacesMonitor2.default, { faces: _this.state.faces, 'data-qa-node': 'FacesMonitor',
           'data-qa-file': 'App'
         })
       );
@@ -1074,13 +1074,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Container = (0, _react4.default)('div', 'css-Container-a6reab0', [{
+var Container = (0, _react4.default)('div', 'css-Container-i1uadn0', [{
   'position': 'relative',
   'WebkitBoxFlex': '1',
   'msFlex': '1',
   'flex': '1'
 }]);
-var FaceId = (0, _react4.default)('div', 'css-FaceId-a6reab1', [{
+var FaceId = (0, _react4.default)('div', 'css-FaceId-i1uadn1', [{
   'position': 'absolute',
   'border': 'blue 2px solid'
 }, function (_ref) {
@@ -1149,11 +1149,14 @@ var EmotionCapture = function (_Component) {
       _this.canvas.width = _this.width;
       _this.canvas.height = _this.height;
       context.drawImage(_this.video, 0, 0, _this.width, _this.height);
-    }, _this.startTracking = function () {
-      _this.interval = setInterval(_this.checkEmotions, CHECK_TIME);
-    }, _this.stopTracking = function () {
-      clearInterval(_this.interval);
-    }, _this.render = function () {
+    }, _this.toggleTracking = function () {
+      if (_this.state.tracking) {
+        clearInterval(_this.interval);
+      } else {
+        _this.interval = setInterval(_this.checkEmotions, CHECK_TIME);
+      }
+      _this.setState({ tracking: !_this.state.tracking });
+    }, _this.stopTracking = function () {}, _this.render = function () {
       return _react2.default.createElement(
         Container,
         { innerRef: _this.setContainer, 'data-qa-node': 'Container',
@@ -1175,7 +1178,13 @@ var EmotionCapture = function (_Component) {
               height = _ref4.height;
           return _react2.default.createElement(
             FaceId,
-            { key: 'face_id_' + index, x: location_xy[0], y: location_xy[1], width: width, height: height, 'data-qa-node': 'FaceId',
+            {
+              key: 'face_id_' + index,
+              x: location_xy[0],
+              y: location_xy[1],
+              width: width,
+              height: height,
+              'data-qa-node': 'FaceId',
               'data-qa-file': 'EmotionCapture'
             },
             key
@@ -1183,17 +1192,11 @@ var EmotionCapture = function (_Component) {
         }),
         _react2.default.createElement(
           'button',
-          { onClick: _this.startTracking, 'data-qa-node': 'button',
+          { onClick: _this.toggleTracking, 'data-qa-node': 'button',
             'data-qa-file': 'EmotionCapture'
           },
-          'Start Tracking'
-        ),
-        _react2.default.createElement(
-          'button',
-          { onClick: _this.stopTracking, 'data-qa-node': 'button',
-            'data-qa-file': 'EmotionCapture'
-          },
-          'Stop Tracking'
+          _this.state.tracking ? 'Stop' : 'Start',
+          ' Tracking'
         )
       );
     }, _temp), _possibleConstructorReturn(_this, _ret);
@@ -1262,11 +1265,13 @@ var _Face2 = _interopRequireDefault(_Face);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Faces = (0, _react4.default)('div', 'css-Faces-cye7p50', [{
+var Faces = (0, _react4.default)('div', 'css-Faces-17me2d00', [{
   'overflow': 'auto',
   'WebkitBoxFlex': '1',
   'msFlex': '1',
-  'flex': '1'
+  'flex': '1',
+  'padding': '1rem',
+  'backgroundColor': '#DDD'
 }]);
 
 var FacesMonitor = function FacesMonitor(_ref) {
@@ -1442,7 +1447,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Container = (0, _react4.default)('div', 'css-Container-14f37a40', [{
+var Container = (0, _react4.default)('div', 'css-Container-179g5z0', [{
   'WebkitBoxFlex': '1',
   'msFlex': '1',
   'flex': '1'
@@ -1489,14 +1494,6 @@ var Timeline = function (_Component) {
           'data-qa-file': 'Timeline'
         },
         _react2.default.createElement(
-          'h1',
-          {
-            'data-qa-node': 'h1',
-            'data-qa-file': 'Timeline'
-          },
-          _this.state.current
-        ),
-        _react2.default.createElement(
           'select',
           {
             value: _this.state.current,
@@ -1520,7 +1517,7 @@ var Timeline = function (_Component) {
           _recharts.LineChart,
           {
             width: 600,
-            height: 300,
+            height: 250,
             data: _this.generateData(_this.state.current),
             margin: { top: 5, right: 30, left: 20, bottom: 5 },
             'data-qa-node': 'LineChart',
@@ -1601,4 +1598,4 @@ exports.push([module.i, "html {\n  box-sizing: border-box;\n}\n\n*,\n*:before,\n
 /***/ })
 
 },[288]);
-//# sourceMappingURL=app.3ee3746b743e76a4c417.js.map
+//# sourceMappingURL=app.62e385468d8c7b7ec5c7.js.map

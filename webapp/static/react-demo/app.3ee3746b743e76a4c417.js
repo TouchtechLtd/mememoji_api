@@ -889,9 +889,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // import { BrowserRouter as Router } from 'react-router-dom';
 
 
-var FACE_TIMEOUT = 1000;
+var FACE_TIMEOUT = 5000;
 
-var MainContainer = (0, _react4.default)('div', 'css-MainContainer-1b9nilv0', [{
+var MainContainer = (0, _react4.default)('div', 'css-MainContainer-iou4fo0', [{
   'position': 'absolute',
   'top': '0',
   'left': '0',
@@ -905,7 +905,7 @@ var MainContainer = (0, _react4.default)('div', 'css-MainContainer-1b9nilv0', [{
   'msFlexDirection': 'column',
   'flexDirection': 'column'
 }]);
-var Container = (0, _react4.default)('div', 'css-Container-1b9nilv1', [{
+var Container = (0, _react4.default)('div', 'css-Container-iou4fo1', [{
   'display': '-webkit-box; display: -ms-flexbox; display: flex',
   'WebkitBoxFlex': '1',
   'msFlex': '1',
@@ -1074,13 +1074,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Container = (0, _react4.default)('div', 'css-Container-kmtl0k0', [{
+var Container = (0, _react4.default)('div', 'css-Container-a6reab0', [{
   'position': 'relative',
   'WebkitBoxFlex': '1',
   'msFlex': '1',
   'flex': '1'
 }]);
-var FaceId = (0, _react4.default)('div', 'css-FaceId-kmtl0k1', [{
+var FaceId = (0, _react4.default)('div', 'css-FaceId-a6reab1', [{
   'position': 'absolute',
   'border': 'blue 2px solid'
 }, function (_ref) {
@@ -1096,7 +1096,7 @@ var FaceId = (0, _react4.default)('div', 'css-FaceId-kmtl0k1', [{
   };
 }]);
 
-var CHECK_TIME = 300;
+var CHECK_TIME = 1000;
 
 var EmotionCapture = function (_Component) {
   _inherits(EmotionCapture, _Component);
@@ -1114,7 +1114,7 @@ var EmotionCapture = function (_Component) {
 
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = EmotionCapture.__proto__ || Object.getPrototypeOf(EmotionCapture)).call.apply(_ref2, [this].concat(args))), _this), _this.state = {
       faces: [],
-      constraints: { audio: false, video: { width: 400, height: 300 } }
+      constraints: { audio: false }
     }, _this.setCanvas = function (ref) {
       if (ref) _this.canvas = ref;
     }, _this.setVideo = function (ref) {
@@ -1123,6 +1123,8 @@ var EmotionCapture = function (_Component) {
       if (ref) _this.container = ref;
     }, _this.checkEmotions = function () {
       _this.takePicture();
+      // PREVIEW IMAGE FOR TESTING
+      // this.setState({ preview: this.canvas.toDataURL('image/png') });
       _this.canvas.toBlob(function (blob) {
         var data = new FormData();
         data.append('image_buf', blob, 'emotion');
@@ -1134,7 +1136,7 @@ var EmotionCapture = function (_Component) {
 
           // const endTime = new Date().getTime();
           // console.log(endTime - startTime);
-          console.log(faces);
+          // console.log(faces);
           if (_this.props.onCapture) _this.props.onCapture(faces);
           // this.registerFaces(faces);
           _this.setState({ faces: faces });
@@ -1144,13 +1146,9 @@ var EmotionCapture = function (_Component) {
       });
     }, _this.takePicture = function () {
       var context = _this.canvas.getContext('2d');
-      var _this$state$constrain = _this.state.constraints.video,
-          width = _this$state$constrain.width,
-          height = _this$state$constrain.height;
-
-      _this.canvas.width = width;
-      _this.canvas.height = height;
-      context.drawImage(_this.video, 0, 0, width, height);
+      _this.canvas.width = _this.width;
+      _this.canvas.height = _this.height;
+      context.drawImage(_this.video, 0, 0, _this.width, _this.height);
     }, _this.startTracking = function () {
       _this.interval = setInterval(_this.checkEmotions, CHECK_TIME);
     }, _this.stopTracking = function () {
@@ -1167,6 +1165,9 @@ var EmotionCapture = function (_Component) {
         _react2.default.createElement('canvas', { ref: _this.setCanvas, hidden: true, 'data-qa-node': 'canvas',
           'data-qa-file': 'EmotionCapture'
         }),
+        _this.state.preview && _react2.default.createElement('img', { src: _this.state.preview, 'data-qa-node': 'img',
+          'data-qa-file': 'EmotionCapture'
+        }),
         _this.state.faces.map(function (_ref4, key) {
           var index = _ref4.index,
               location_xy = _ref4.location_xy,
@@ -1174,13 +1175,7 @@ var EmotionCapture = function (_Component) {
               height = _ref4.height;
           return _react2.default.createElement(
             FaceId,
-            {
-              key: 'face_id_' + index,
-              x: location_xy[0],
-              y: location_xy[1],
-              width: width,
-              height: height,
-              'data-qa-node': 'FaceId',
+            { key: 'face_id_' + index, x: location_xy[0], y: location_xy[1], width: width, height: height, 'data-qa-node': 'FaceId',
               'data-qa-file': 'EmotionCapture'
             },
             key
@@ -1215,6 +1210,8 @@ var EmotionCapture = function (_Component) {
           width = _container$getBoundin.width,
           height = _container$getBoundin.height;
 
+      this.height = height;
+      this.width = width;
       var getUserMedia = function getUserMedia(params) {
         return new Promise(function (successCallback, errorCallback) {
           return navigator.webkitGetUserMedia.call(navigator, params, successCallback, errorCallback);
@@ -1445,7 +1442,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Container = (0, _react4.default)('div', 'css-Container-y3qr5o0', [{
+var Container = (0, _react4.default)('div', 'css-Container-14f37a40', [{
   'WebkitBoxFlex': '1',
   'msFlex': '1',
   'flex': '1'
@@ -1465,7 +1462,7 @@ var Timeline = function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Timeline.__proto__ || Object.getPrototypeOf(Timeline)).call.apply(_ref, [this].concat(args))), _this), _this.state = { opacity: 1, current: 'face_1' }, _this.generateData = function (id) {
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Timeline.__proto__ || Object.getPrototypeOf(Timeline)).call.apply(_ref, [this].concat(args))), _this), _this.state = { current: 'face_1' }, _this.generateData = function (id) {
       var history = _this.props.history;
       // const emotion = 'sad';
 
@@ -1484,14 +1481,6 @@ var Timeline = function (_Component) {
         })));
       }, {});
       return data[id];
-    }, _this.handleLegendMouseEnter = function () {
-      _this.setState({
-        opacity: 0.5
-      });
-    }, _this.handleLegendMouseLeave = function () {
-      _this.setState({
-        opacity: 1
-      });
     }, _this.render = function () {
       return _react2.default.createElement(
         Container,
@@ -1612,4 +1601,4 @@ exports.push([module.i, "html {\n  box-sizing: border-box;\n}\n\n*,\n*:before,\n
 /***/ })
 
 },[288]);
-//# sourceMappingURL=app.14863716ed858cce6b46.js.map
+//# sourceMappingURL=app.3ee3746b743e76a4c417.js.map

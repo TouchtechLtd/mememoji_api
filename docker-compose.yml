@@ -1,0 +1,4 @@
+version: '2'
+services:
+  app:
+    image: hub.touchtech.co.nz/mememoji-touchtech:latest

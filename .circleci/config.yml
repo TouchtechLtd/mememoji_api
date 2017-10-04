@@ -1,0 +1,76 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:17.05.0-ce-git
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache \
+              py-pip=9.0.0-r1
+            pip install \
+              docker-compose==1.12.0
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -t app --cache-from=app .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/app.tar
+      - run:
+          name: Tag and push Docker image
+          command: |
+            docker login $DOCKER_REGISTRY -u=$DOCKER_USER -p=$DOCKER_PASS
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+              docker tag app $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:latest-staging
+              docker push $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:latest-staging
+            elif [ -n "${CIRCLE_TAG}" ]; then
+              TAG=$CIRCLE_TAG.$CIRCLE_BUILD_NUM
+              docker tag app $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:$TAG
+              docker tag app $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:latest
+              docker push $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:$TAG
+              docker push $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:latest
+              circleci step halt
+            else
+              circleci step halt
+            fi
+      - deploy:
+          name: Deploy staging server
+          command: |
+            mkdir -p ~/.docker
+            echo $DOCKER_CERTS_B64 | base64 -d | tar -zx -C ~/.docker/
+            export DOCKER_HOST=$DOCKER_HOST_URL:$DOCKER_HOST_PORT
+            export DOCKER_TLS_VERIFY=1
+            export DOCKER_CERT_PATH=~/.docker
+            docker --tlscacert ~/.docker/ca.pem pull $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:latest-staging
+            docker-compose --tlscacert ~/.docker/ca.pem -f docker-compose.yml -f docker-compose.staging.yml -p $CIRCLE_PROJECT_REPONAME up -d
+
+workflows:
+  version: 2
+  build_test_push:
+    jobs:
+      - build:
+          context: org-global
+          filters:
+            tags:
+              only: /.*/

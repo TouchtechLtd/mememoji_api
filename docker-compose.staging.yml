@@ -1,0 +1,9 @@
+version: '2'
+services:
+  app:
+    environment:
+      VIRTUAL_HOST: tepapa-poc.touchtech.co.nz
+      VIRTUAL_PORT: 5000
+
+
+

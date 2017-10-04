@@ -27,6 +27,4 @@ In addition and by necessity, the simple demo uses [HTML5](https://en.wikipedia.
 
 clone the repo and then run
 
-`docker build -t mememoji .`
-
-`docker run -p 5000:5000 mememoji`
+`docker-compose up`

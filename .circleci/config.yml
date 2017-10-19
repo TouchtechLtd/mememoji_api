@@ -7,13 +7,6 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --no-cache \
-              py-pip=9.0.0-r1
-            pip install \
-              docker-compose==1.12.0
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
@@ -63,7 +56,7 @@ jobs:
             export DOCKER_TLS_VERIFY=1
             export DOCKER_CERT_PATH=~/.docker
             docker --tlscacert ~/.docker/ca.pem pull $DOCKER_REGISTRY/$CIRCLE_PROJECT_REPONAME:latest-staging
-            docker-compose --tlscacert ~/.docker/ca.pem -f docker-compose.yml -f docker-compose.staging.yml -p $CIRCLE_PROJECT_REPONAME up -d
+            docker --tlscacert ~/.docker/ca.pem stack deploy -c docker-compose.staging.yml $CIRCLE_PROJECT_REPONAME
 
 workflows:
   version: 2
